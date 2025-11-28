@@ -1,4 +1,9 @@
-<?php include('config/db.php'); ?>
+<?php
+include('config/db.php');
+// session_start();
+$isLoggedIn = isset($_SESSION['user_id']);
+?>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -34,7 +39,7 @@
             <h3>BS. Đào Văn Duy</h3>
             <p class="expert-specialty">Chuyên khoa: Khám tổng quát, Điều trị bệnh nội khoa</p>
             <p class="expert-description">
-                BS. Duy là chuyên gia về khám sức khỏe định kỳ và **chẩn đoán, điều trị các bệnh lý nội khoa** phổ biến như tiêu hóa, hô hấp, da liễu. BS. Duy luôn tập trung vào việc tư vấn chăm sóc phòng ngừa và đưa ra phác đồ điều trị tận gốc.
+                BS. Duy là chuyên gia về khám sức khỏe định kỳ và chẩn đoán, điều trị các bệnh lý nội khoa phổ biến như tiêu hóa, hô hấp, da liễu. BS. Duy luôn tập trung vào việc tư vấn chăm sóc phòng ngừa và đưa ra phác đồ điều trị tận gốc.
             </p>
             <p class="expertise-heading">Dịch vụ phụ trách chính:</p>
             <ul class="expertise-list no-icon">
@@ -42,7 +47,11 @@
                 <li>Điều trị các bệnh mãn tính</li>
                 <li>Tư vấn chế độ dinh dưỡng và lối sống</li>
             </ul>
-            <a href="<?= $BASE ?>/user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Khám/Điều trị</a>
+            <?php if($isLoggedIn): ?>
+              <a href="user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Khám/Điều trị</a>
+            <?php else: ?>
+              <a href="user/login.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Khám/Điều trị</a>
+            <?php endif; ?>
         </div>
       </div>
       
@@ -63,7 +72,11 @@
                 <li>Cấp phát thuốc tẩy giun, phòng ve rận</li>
                 <li>Khám sức khỏe định kỳ và cấp cứu nhẹ</li>
             </ul>
-            <a href="<?= $BASE ?>/user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Tiêm phòng</a>
+            <?php if($isLoggedIn): ?>
+              <a href="user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Tiêm phòng</a>
+            <?php else: ?>
+              <a href="user/login.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Tiêm phòng</a>
+            <?php endif; ?>
         </div>
       </div>
       
@@ -84,7 +97,11 @@
                 <li>Chẩn đoán và điều trị các bệnh truyền nhiễm khó</li>
                 <li>Khám tổng quát các ca bệnh cần theo dõi sát sao</li>
             </ul>
-           <a href="<?= $BASE ?>/user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Xét nghiệm/Chẩn đoán</a>
+           <?php if($isLoggedIn): ?>
+              <a href="user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Xét nghiệm/Chẩn đoán</a>
+            <?php else: ?>
+              <a href="user/login.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Xét nghiệm/Chẩn đoán</a>
+            <?php endif; ?>
         </div>
       </div>
 
@@ -105,7 +122,11 @@
                 <li>Thực hiện và đọc kết quả X-Quang, Siêu âm</li>
                 <li>Phẫu thuật ngoại khoa thông thường (mổ u bướu)</li>
             </ul>
-              <a href="<?= $BASE ?>/user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật/Cấp cứu</a>
+              <?php if($isLoggedIn): ?>
+              <a href="user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật/Cấp cứu</a>
+            <?php else: ?>
+              <a href="user/login.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật/Cấp cứu</a>
+            <?php endif; ?>
         </div>
       </div>
       
@@ -126,7 +147,11 @@
                 <li>Phẫu thuật triệt sản (thiến) an toàn</li>
                 <li>Phẫu thuật lấy dị vật phức tạp</li>
             </ul>
-             <a href="<?= $BASE ?>/user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật chuyên sâu</a>
+            <?php if($isLoggedIn): ?>
+              <a href="user/booking.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật chuyên sâu</a>
+            <?php else: ?>
+              <a href="user/login.php" class="btn primary-btn small-btn expert-btn">Đặt lịch Phẫu thuật chuyên sâu</a>
+            <?php endif; ?>
         </div>
       </div>
 

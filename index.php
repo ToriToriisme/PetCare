@@ -19,7 +19,11 @@
     <div class="banner-text">
       <h1>CHĂM SÓC TỐT NHẤT CHO NGƯỜI BẠN BỐN CHÂN YÊU QUÝ</h1>
       <p>Khám - Điều trị - Tiêm phòng - Tư vấn dinh dưỡng chuyên nghiệp, tận tâm.</p>
-<a href="<?= $BASE_URL ?>user/booking.php" class="btn primary-btn small-btn full-width">ĐẶT LỊCH NGAY</a>
+      <?php if($isLoggedIn): ?>
+        <a href="user/booking.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+      <?php else: ?>
+        <a href="user/login.php" class="btn primary-btn">ĐĂNG NHẬP / ĐĂNG KÝ</a>
+      <?php endif; ?>
     </div> 
     <div class="banner-image">
       <img src="assets/img/doctor-with-golden.png" alt="Bác sĩ thú y chăm sóc chú chó Golden Retriever">
@@ -106,28 +110,44 @@
           <img src="assets/img/dog-tiem.png" alt="Tiêm phòng" class="promo-card-img">
           <h3>Giảm 15% Tiêm Phòng</h3>
           <p>Bảo vệ sức khỏe toàn diện cho thú cưng của bạn.</p>
-<a href="<?= $BASE_URL ?>user/booking.php" class="btn primary-btn small-btn full-width">ĐẶT LỊCH NGAY</a>
+          <?php if($isLoggedIn): ?>
+            <a href="user/booking.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php else: ?>
+            <a href="user/login.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php endif; ?>
         </div>
 
         <div class="promo-card-new light-blue">
           <img src="assets/img/dog-trietsan.png" alt="Triệt sản mèo" class="promo-card-img">
           <h3>Triệt Sản An Toàn</h3>
           <p>Trọn gói chỉ từ 999K, an toàn tuyệt đối.</p>
-<a href="<?= $BASE_URL ?>user/booking.php" class="btn primary-btn small-btn full-width">ĐẶT LỊCH NGAY</a>
+          <?php if($isLoggedIn): ?>
+            <a href="user/booking.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php else: ?>
+            <a href="user/login.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php endif; ?>
         </div>
 
         <div class="promo-card-new light-orange">
           <img src="assets/img/dog-kham.png" alt="Triệt sản chó" class="promo-card-img">
           <h3>Gói chăm sóc toàn diện</h3>
           <p>Tiết kiệm đến 20%, bao gồm khám – tiêm – xét nghiệm.</p>
-<a href="<?= $BASE_URL ?>user/booking.php" class="btn primary-btn small-btn full-width">ĐẶT LỊCH NGAY</a>
+          <?php if($isLoggedIn): ?>
+            <a href="user/booking.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php else: ?>
+            <a href="user/login.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php endif; ?>
         </div>
 
         <div class="promo-card-new light-gray">
         <img src="assets/img/0d.png" alt="0đ" class="promo-card-img">
           <h3>Miễn Phí Khám Tổng Quát</h3>
           <p>Không kèm dịch vụ khác, áp dụng lần đầu.</p>
-<a href="<?= $BASE_URL ?>user/booking.php" class="btn primary-btn small-btn full-width">ĐẶT LỊCH NGAY</a>
+          <?php if($isLoggedIn): ?>
+            <a href="user/booking.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php else: ?>
+            <a href="user/login.php" class="btn primary-btn">ĐẶT LỊCH NGAY</a>
+          <?php endif; ?>
         </div>
       </div>
 

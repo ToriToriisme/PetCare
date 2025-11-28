@@ -1,6 +1,6 @@
 <?php
 include('config/db.php');
-include('includes/header.php');
+// include('includes/header.php');
 
 // Lấy ID bài viết từ URL
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
