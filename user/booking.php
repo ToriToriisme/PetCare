@@ -4,6 +4,7 @@ include('../config/db.php');
 
 // Khởi tạo biến
 $success_message = '';
+$success_link = '';
 $error_message = '';
 $fullname = $phone = $email = '';
 
@@ -64,6 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($service_id === null) {
             $error_message = 'Dịch vụ không hợp lệ. Vui lòng chọn lại dịch vụ.';
         } else {
+            // Determine current_user_id: check if user is logged in and user_id exists in users table
+            $current_user_id = null;
+            if (isset($_SESSION['user_id'])) {
+                $session_user_id = $_SESSION['user_id'];
+                // Verify that this user_id actually exists in the users table
+                $user_check = getSingleResult("SELECT id FROM users WHERE id = ?", [$session_user_id]);
+                if ($user_check) {
+                    $current_user_id = (int)$session_user_id;
+                }
+            }
+            
             // Insert booking
             $sql = "INSERT INTO bookings (user_id, fullname, phone, email, pet_name, pet_type, service_id, doctor_id, appointment_date, appointment_time, note) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -165,6 +177,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
                 $success_message = 'Đặt lịch thành công! Chúng tôi sẽ sớm liên hệ lại để xác nhận 🐾';
+                $success_link = '';
+                
+                // If user is logged in, add link to view history
+                if ($current_user_id !== null) {
+                    $success_link = ' <a href="history.php" style="color: #2e7d32; text-decoration: underline; font-weight: 600;">Xem lịch sử đặt lịch</a>';
+                }
                 
                 // Clear form data
                 $fullname = $phone = $email = $pet_name = $pet_type = '';
@@ -218,7 +236,7 @@ $doctors = getResults("SELECT * FROM doctors ORDER BY name");
     
     <?php if ($success_message): ?>
     <div class="notice success-notice" style="display:block; background-color: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-      <?php echo htmlspecialchars($success_message); ?>
+      <?php echo htmlspecialchars($success_message); ?><?php echo isset($success_link) ? $success_link : ''; ?>
     </div>
     <?php endif; ?>
     
