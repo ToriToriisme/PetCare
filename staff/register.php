@@ -45,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Mã hóa mật khẩu
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             
-            // Ảnh đại diện mặc định (đường dẫn tính từ web root)
-            $default_image = 'assets/img/doctors/doctor-duy.jpg'; 
+            // Ảnh đại diện mặc định
+            $default_image = 'assets/img/doctor-duy.jpg'; 
 
             $sql = "INSERT INTO doctors (name, email, username, password, specialty, image) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);

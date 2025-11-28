@@ -1,5 +1,6 @@
 <?php
-session_start(); // Khởi động phiên làm việc
+session_start();
+require_once '../config/db.php';
 
 // 1. KIỂM TRA BẢO MẬT
 if (!isset($_SESSION['user_id'])) {
@@ -7,12 +8,27 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// 2. LẤY THÔNG TIN BÁC SĨ
-$current_user = [
-    'name' => $_SESSION['user_name'] ?? 'Bác sĩ',
-    'role' => $_SESSION['user_role'] ?? 'Bác sĩ Thú Y',
-    'avatar' => '../' . ($_SESSION['user_avatar'] ?? 'assets/img/doctor-duy.jpg') 
-];
+$user_id = $_SESSION['user_id'];
+
+// --- LẤY THÔNG TIN USER (AVATAR) ---
+$stmt = $conn->prepare("SELECT name, specialty, image FROM doctors WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_data = $stmt->get_result()->fetch_assoc();
+
+$avatar_url = "../" . ($user_data['image'] ?? 'assets/img/default-avatar.png');
+if (!file_exists($avatar_url) || empty($user_data['image'])) {
+    $avatar_url = "https://ui-avatars.com/api/?name=" . urlencode($user_data['name']) . "&background=random&size=128";
+}
+
+// --- LẤY DANH SÁCH LỊCH HẸN HÔM NAY TỪ DB ---
+$today = date('Y-m-d');
+// Lấy các lịch hẹn trong ngày hôm nay, sắp xếp theo giờ
+$sql_bookings = "SELECT * FROM bookings WHERE appointment_date = ? ORDER BY appointment_time ASC";
+$stmt_b = $conn->prepare($sql_bookings);
+$stmt_b->bind_param("s", $today);
+$stmt_b->execute();
+$result_bookings = $stmt_b->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -24,27 +40,28 @@ $current_user = [
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/staff-style.css">
     <style>
-        /* Thêm style cho trạng thái Đã hủy */
-        .status.cancelled { color: #c62828; background: #ffebee; padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 12px; }
         .reason-text { font-size: 12px; color: #777; font-style: italic; display: block; margin-top: 5px; }
+        /* Style cho các trạng thái */
+        .status.pending { color: #f57c00; font-weight: 600; } /* Chờ Check-in */
+        .status.waiting { color: #0097a7; font-weight: 600; } /* Đang đợi khám */
+        .status.completed { color: #388e3c; font-weight: 600; } /* Đã xong */
+        .status.cancelled { color: #c62828; background: #ffebee; padding: 4px 10px; border-radius: 20px; font-weight: 600; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="admin-layout">
     <aside class="sidebar">
-        <div class="brand">
-            🐾 PetCare <span class="badge">Doctor</span>
-        </div>
+        <div class="brand">🐾 PetCare <span class="badge">Doctor</span></div>
         
-        <div class="user-panel">
-            <img src="<?php echo htmlspecialchars($current_user['avatar']); ?>" alt="Avatar"> 
+        <a href="staff-profile.php" class="user-panel" style="text-decoration: none;">
+            <img src="<?php echo $avatar_url; ?>" alt="Avatar"> 
             <div class="info">
                 <p>Xin chào,</p>
-                <h4><?php echo htmlspecialchars($current_user['name']); ?></h4>
-                <small style="color:#ccc; font-size: 12px;"><?php echo htmlspecialchars($current_user['role']); ?></small>
+                <h4><?php echo htmlspecialchars($user_data['name']); ?></h4>
+                <small style="color:#b0bec5; font-size: 12px;"><?php echo htmlspecialchars($user_data['specialty']); ?></small>
             </div>
-        </div>
+        </a>
 
         <ul class="menu">
             <li class="active"><a href="dashboard.php">📅 Lịch hẹn hôm nay</a></li>
@@ -61,18 +78,7 @@ $current_user = [
         </header>
 
         <div class="stats-grid">
-            <div class="stat-card blue">
-                <h3>05</h3>
-                <p>Lịch chờ khám</p>
-            </div>
-            <div class="stat-card green">
-                <h3>02</h3>
-                <p>Đã hoàn thành</p>
-            </div>
-            <div class="stat-card orange">
-                <h3>01</h3>
-                <p>Chờ Check-in</p>
-            </div>
+            <div class="stat-card"><h3><?php echo $result_bookings->num_rows; ?></h3><p>Tổng lịch hôm nay</p></div>
         </div>
 
         <section class="schedule-section">
@@ -88,45 +94,57 @@ $current_user = [
                             <th>Giờ</th>
                             <th>Khách hàng</th>
                             <th>Thú cưng</th>
-                            <th>Dịch vụ</th>
-                            <th>Trạng thái</th>
+                            <th>Dịch vụ</th> <th>Trạng thái</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr id="row-1">
-                            <td><b>08:30</b></td>
-                            <td>Nguyễn Văn A<br><small>0909123456</small></td>
-                            <td>🐶 Miu (Chó)</td>
-                            <td><span class="tag service">Khám tổng quát</span></td>
-                            <td><span class="status pending" id="status-1">Chờ Check-in</span></td>
-                            <td id="action-1">
-                                <button class="btn-action checkin" onclick="handleCheckIn(1)">✅ Check-in</button>
-                                <button class="btn-action cancel" onclick="handleCancel(1)">❌ Hủy</button>
-                            </td>
-                        </tr>
-                        
-                        <tr class="active-row">
-                            <td><b>09:00</b></td>
-                            <td>Trần Thị B<br><small>0912345678</small></td>
-                            <td>🐱 Bông (Mèo)</td>
-                            <td><span class="tag service">Tiêm phòng</span></td>
-                            <td><span class="status waiting">Đang đợi khám</span></td>
-                            <td>
-                                <a href="medical-record.php" class="btn-action exam" style="display:inline-block; text-decoration:none;">🩺 Khám ngay</a>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td><b>10:15</b></td>
-                            <td>Lê Văn C<br><small>0988776655</small></td>
-                            <td>🐶 Lu (Chó)</td>
-                            <td><span class="tag service">Phẫu thuật</span></td>
-                            <td><span class="status done">Đã xong</span></td>
-                            <td>
-                                <a href="medical-record.php?view=true" class="btn-action view" style="display:inline-block; text-decoration:none;">👁️ Xem hồ sơ</a>
-                            </td>
-                        </tr>
+                        <?php if ($result_bookings->num_rows > 0): ?>
+                            <?php while($row = $result_bookings->fetch_assoc()): 
+                                // Xử lý hiển thị tên dịch vụ (Giả sử bạn có map id -> tên, hoặc join bảng)
+                                // Ở đây mình tạm hiển thị ID hoặc map đơn giản
+                                $service_names = [1 => 'Khám tổng quát', 2 => 'Tiêm phòng', 3 => 'Phẫu thuật'];
+                                $service_name = $service_names[$row['service_id']] ?? 'Dịch vụ khác';
+                                
+                                $status = $row['status'];
+                                $row_class = ($status == 'waiting') ? 'active-row' : '';
+                                $row_opacity = ($status == 'cancelled') ? '0.6' : '1';
+                            ?>
+                            <tr id="row-<?php echo $row['id']; ?>" class="<?php echo $row_class; ?>" style="opacity: <?php echo $row_opacity; ?>">
+                                <td><b><?php echo date('H:i', strtotime($row['appointment_time'])); ?></b></td>
+                                <td><?php echo htmlspecialchars($row['fullname']); ?><br><small><?php echo htmlspecialchars($row['phone']); ?></small></td>
+                                <td>🐶 <?php echo htmlspecialchars($row['pet_name']); ?></td>
+                                <td><span class="tag service"><?php echo $service_name; ?></span></td>
+                                
+                                <td>
+                                    <?php if($status == 'pending'): ?>
+                                        <span class="status pending" id="status-<?php echo $row['id']; ?>">Chờ Check-in</span>
+                                    <?php elseif($status == 'waiting'): ?>
+                                        <span class="status waiting" id="status-<?php echo $row['id']; ?>">Đang đợi khám</span>
+                                    <?php elseif($status == 'completed'): ?>
+                                        <span class="status completed">Đã xong</span>
+                                    <?php elseif($status == 'cancelled'): ?>
+                                        <span class="status cancelled">Đã hủy</span>
+                                    <?php endif; ?>
+                                </td>
+
+                                <td id="action-<?php echo $row['id']; ?>">
+                                    <?php if($status == 'pending'): ?>
+                                        <button class="btn-action checkin" onclick="handleCheckIn(<?php echo $row['id']; ?>)">✅ Check-in</button>
+                                        <button class="btn-action cancel" onclick="handleCancel(<?php echo $row['id']; ?>)">❌ Hủy</button>
+                                    <?php elseif($status == 'waiting'): ?>
+                                        <a href="medical-record.php?id=<?php echo $row['id']; ?>" class="btn-action exam" style="display:inline-block; text-decoration:none;">🩺 Khám ngay</a>
+                                    <?php elseif($status == 'completed'): ?>
+                                        <a href="medical-record.php?id=<?php echo $row['id']; ?>&view=true" class="btn-action view" style="display:inline-block; text-decoration:none;">👁️ Xem hồ sơ</a>
+                                    <?php elseif($status == 'cancelled'): ?>
+                                        <span class="reason-text">Lịch đã hủy</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr><td colspan="6" style="text-align:center;">Hôm nay chưa có lịch hẹn nào.</td></tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -135,39 +153,64 @@ $current_user = [
 </div>
 
 <script>
-    // Hàm xử lý Check-in
-    function handleCheckIn(id) {
-        if(confirm('Xác nhận khách hàng đã đến và sẵn sàng khám?')) {
-            // 1. Đổi trạng thái
-            const statusSpan = document.getElementById('status-' + id);
-            statusSpan.className = 'status waiting'; // Đổi class màu xanh
-            statusSpan.innerText = 'Đang đợi khám';
+    // --- ĐỒNG BỘ DARK MODE ---
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+    }
 
-            // 2. Đổi nút bấm
-            const actionTd = document.getElementById('action-' + id);
-            actionTd.innerHTML = '<a href="medical-record.php" class="btn-action exam" style="display:inline-block; text-decoration:none;">🩺 Khám ngay</a>';
+    // --- API UPDATE STATUS ---
+    async function updateStatusAPI(id, status) {
+        try {
+            const response = await fetch('api/update_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, status: status })
+            });
+            const result = await response.json();
+            return result.success;
+        } catch (error) {
+            console.error('Lỗi API:', error);
+            alert('Có lỗi xảy ra khi lưu dữ liệu!');
+            return false;
+        }
+    }
+
+    // Hàm xử lý Check-in
+    async function handleCheckIn(id) {
+        if(confirm('Xác nhận khách hàng đã đến và sẵn sàng khám?')) {
+            // Gọi API lưu trạng thái 'waiting'
+            const success = await updateStatusAPI(id, 'waiting');
             
-            // 3. Highlight dòng đó lên
-            document.getElementById('row-' + id).classList.add('active-row');
+            if (success) {
+                // Cập nhật giao diện ngay lập tức
+                const statusSpan = document.getElementById('status-' + id);
+                statusSpan.className = 'status waiting';
+                statusSpan.innerText = 'Đang đợi khám';
+
+                const actionTd = document.getElementById('action-' + id);
+                actionTd.innerHTML = '<a href="medical-record.php?id='+id+'" class="btn-action exam" style="display:inline-block; text-decoration:none;">🩺 Khám ngay</a>';
+                
+                document.getElementById('row-' + id).classList.add('active-row');
+            }
         }
     }
 
     // Hàm xử lý Hủy lịch
-    function handleCancel(id) {
-        const reason = prompt("Vui lòng nhập lý do hủy lịch (Khách bận, Bác sĩ bận...):");
-        
-        if (reason != null && reason.trim() !== "") {
-            // 1. Đổi trạng thái
-            const statusSpan = document.getElementById('status-' + id);
-            statusSpan.className = 'status cancelled'; // Đổi class màu đỏ
-            statusSpan.innerText = 'Đã hủy';
+    async function handleCancel(id) {
+        if(confirm("Bạn có chắc muốn hủy lịch này không?")) {
+            // Gọi API lưu trạng thái 'cancelled'
+            const success = await updateStatusAPI(id, 'cancelled');
 
-            // 2. Xóa nút bấm và hiện lý do
-            const actionTd = document.getElementById('action-' + id);
-            actionTd.innerHTML = '<span class="reason-text">Lý do: ' + reason + '</span>';
-            
-            // 3. Làm mờ dòng đó đi
-            document.getElementById('row-' + id).style.opacity = '0.6';
+            if (success) {
+                const statusSpan = document.getElementById('status-' + id);
+                statusSpan.className = 'status cancelled'; 
+                statusSpan.innerText = 'Đã hủy';
+
+                const actionTd = document.getElementById('action-' + id);
+                actionTd.innerHTML = '<span class="reason-text">Lịch đã hủy</span>';
+                
+                document.getElementById('row-' + id).style.opacity = '0.6';
+            }
         }
     }
 </script>

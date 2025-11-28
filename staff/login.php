@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($username) || empty($password)) {
         $error = 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!';
     } else {
-        // Tìm bác sĩ trong database
+        // Tìm bác sĩ trong database (Bảng doctors)
+        // - Sử dụng bảng doctors cho Staff Portal
         $stmt = $conn->prepare("SELECT * FROM doctors WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -48,6 +49,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../assets/css/staff-style.css">
     <style>
         .error-msg { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px; text-align: center;}
+        
+        /* CSS bổ sung cho link Quên mật khẩu đẹp hơn */
+        .forgot-link {
+            text-align: right;
+            margin-bottom: 20px;
+            margin-top: -10px;
+        }
+        .forgot-link a {
+            color: #00bcd4; /* Màu xanh của PetCare */
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .forgot-link a:hover {
+            color: #00838f;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="login-page">
@@ -73,13 +92,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="password" name="password" placeholder="••••••••" required>
             </div>
 
+            <div class="forgot-link">
+                <a href="forgot-password.php">Quên mật khẩu?</a>
+            </div>
+
             <button type="submit" class="btn-login">ĐĂNG NHẬP</button>
             
             <div class="login-footer">
-    <a href="#">Quên mật khẩu?</a>
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-    <p>Chưa có tài khoản? <a href="register.php" style="color: var(--primary); font-weight: bold;">Đăng ký mới</a></p>
-</div>
+                <p>Chưa có tài khoản? <a href="register.php" style="color: var(--primary); font-weight: bold;">Đăng ký mới</a></p>
+            </div>
         </form>
     </div>
 
