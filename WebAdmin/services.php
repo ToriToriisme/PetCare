@@ -21,10 +21,10 @@ require_once('../config/db.php');
         <span class="text">PETCARE</span>
     </a>
     <ul class="side-menu top">
-        <li class="active"><a href="services.php"><i class='bx bxs-briefcase-alt-2'></i><span class="text">Dịch Vụ</span></a></li>
+       <li><a href="services.php"><i class='bx bxs-briefcase-alt-2'></i><span class="text">Dịch Vụ</span></a></li>
         <li><a href="doctors.php"><i class='bx bxs-user-voice'></i><span class="text">Bác Sĩ</span></a></li>
         <li><a href="customers.php"><i class='bx bxs-group'></i><span class="text">Khách Hàng</span></a></li>
-        <li><a href="blogs.php"><i class='bx bxs-book-content'></i><span class="text">Blogs</span></a></li>
+        <li ><a href="blogs.php"><i class='bx bxs-book-content'></i><span class="text">Blogs</span></a></li>
     </ul>
 </section>
 

@@ -281,7 +281,9 @@ $doctors = getResults("SELECT * FROM doctors ORDER BY name");
                 'khám_điều_trị' => 'Khám tổng quát & Điều trị',
                 'tiêm_phòng' => 'Tiêm phòng & Tẩy giun',
                 'phẫu_thuật' => 'Phẫu thuật (Cấp cứu/Ngoại khoa)',
-                'chẩn_đoán' => 'Chẩn đoán hình ảnh & Xét nghiệm'
+                'chẩn_đoán' => 'Chẩn đoán hình ảnh & Xét nghiệm',
+                'spa' => 'Spa & Chăm sóc sắc đẹp'
+
             ];
             foreach ($service_options as $value => $label): 
             ?>
@@ -332,7 +334,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'khám_điều_trị': 1,
         'tiêm_phòng': 2,
         'phẫu_thuật': 3,
-        'chẩn_đoán': 4
+        'chẩn_đoán': 4,
+        'spa': 5
     };
 
     // Load doctors from API when service changes
