@@ -16,7 +16,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
 <?php include('includes/header.php'); ?>
 
 
-<section class="banner-sub" style="background-image: url('assets/img/banner-doctors.jpg');">
+<section class="banner-new">
   <div class="container banner-inner-sub">
     <h1>ĐỘI NGŨ CHUYÊN GIA</h1>
     <p>Gặp gỡ những người bạn đồng hành tận tâm, chuyên nghiệp của PetCare.</p>

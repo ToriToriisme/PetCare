@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php include('../includes/header.php'); ?>
 
-<section class="banner-sub" style="background-image: url('assets/img/banner-profile.jpg');">
+<section class="banner-new">
   <div class="container banner-inner-sub">
     <h1>QUẢN LÝ TÀI KHOẢN</h1>
     <p>Thông tin cá nhân của bạn.</p>

@@ -75,7 +75,7 @@ function getStatusVietnamese($status) {
 
 <?php include('../includes/header.php'); ?>
 
-<section class="banner-sub" style="background-image: url('assets/img/banner-history.jpg');">
+<section class="banner-new">
     <div class="container banner-inner-sub">
         <h1>LỊCH SỬ ĐẶT LỊCH</h1>
         <p>Xem lại các lịch hẹn bạn đã đặt tại PetCare.</p>

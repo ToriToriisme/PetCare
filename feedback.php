@@ -295,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <main>
     
-    <section class="banner-sub">
+    <section class="banner-new">
         <div class="banner-inner-sub">
             <h1>Phản Hồi & Đánh Giá Từ Khách Hàng</h1>
             <p>Xem trải nghiệm của cộng đồng PetCare và gửi đánh giá của bạn</p>
