@@ -1,0 +1,25 @@
+<?php
+// staff/api/update_status.php
+header('Content-Type: application/json');
+require_once '../../config/db.php'; // Đảm bảo đường dẫn đúng tới file db.php
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (isset($data['id']) && isset($data['status'])) {
+    $id = $data['id'];
+    $status = $data['status'];
+
+    // Cập nhật trạng thái vào bảng bookings
+    // (Giả sử bạn dùng bảng bookings, cột 'status' lưu: 'pending', 'waiting', 'completed', 'cancelled')
+    $stmt = $conn->prepare("UPDATE bookings SET status = ? WHERE id = ?");
+    $stmt->bind_param("si", $status, $id);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Lỗi DB']);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Thiếu dữ liệu']);
+}
+?>
